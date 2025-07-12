@@ -21,12 +21,17 @@ jobs:
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
 
-    - name: Install dependencies
+    - name: Install frontend dependencies
       run: |
         cd frontend
         npm ci
 
-    - name: Build
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+
+    - name: Build frontend
       run: |
         cd frontend
         npm run build
@@ -34,6 +39,11 @@ jobs:
         VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
         VITE_REACT_APP_API_URL: ${{ secrets.VITE_REACT_APP_API_URL }}
         VITE_REACT_APP_REDIRECT_URI: ${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
+
+    - name: Build backend
+      run: |
+        cd backend
+        npm run build
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
