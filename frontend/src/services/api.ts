@@ -1,3 +1,8 @@
+// 環境変数のデフォルト値
+const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8000';
+const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'http://localhost:8888/callback';
+
 // モックデータ
 const mockAlbums = [
   {
@@ -56,7 +61,7 @@ export const api = {
   // Spotify認証URLを取得（モック）
   getSpotifyAuthUrl: async () => {
     return {
-      authUrl: 'https://accounts.spotify.com/authorize?client_id=mock&response_type=code&redirect_uri=mock&scope=user-read-recently-played%20user-library-read'
+      authUrl: `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user-read-recently-played%20user-library-read`
     };
   },
 
