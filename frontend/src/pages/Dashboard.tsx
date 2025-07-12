@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MusicVisualizer from '../components/MusicVisualizer'
+import { api } from '../services/api'
 
 interface Track {
   id: string
@@ -33,49 +34,34 @@ const Dashboard: React.FC = () => {
     const fetchTracks = async () => {
       try {
         console.log(`Dashboard: Fetching ${mode} tracks...`)
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'https://y0303noki.github.io/spotify-music-image-app/'
-        console.log('Dashboard: API URL:', apiUrl)
         
-        const endpoint = mode === 'recent' ? '/api/recently-played' : '/api/liked-tracks'
-        const response = await fetch(`${apiUrl}${endpoint}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        })
-
-        console.log('Dashboard: Response status:', response.status)
+        const response = mode === 'recent' 
+          ? await api.getRecentlyPlayed(token)
+          : await api.getLikedTracks(token)
         
-        if (response.ok) {
-          const data = await response.json()
-          console.log('Dashboard: Albums received:', data.albums?.length || 0)
-          
-          // アルバムデータをTrack形式に変換
-          const tracksFromAlbums: Track[] = data.albums.map((album: any) => ({
-            id: album.album.id,
-            name: album.album.name,
-            artist: album.album.artists?.[0]?.name || 'Unknown Artist',
-            album: album.album.name,
-            imageUrl: album.album.images?.[0]?.url || 'https://via.placeholder.com/300x300',
-            playCount: album.count,
-            spotifyUrl: album.album.external_urls?.spotify,
-            albumUrl: album.album.external_urls?.spotify
-          }))
-          
-          setTracks(tracksFromAlbums)
-        } else {
-          const errorData = await response.json().catch(() => ({}))
-          console.error('Dashboard: Failed to fetch tracks:', errorData)
-          
-          if (response.status === 401) {
-            setError('トークンが期限切れです。再度ログインしてください')
-            localStorage.removeItem('spotify_token')
-          } else {
-            setError('曲の取得に失敗しました')
-          }
-        }
+        console.log('Dashboard: Albums received:', response.albums?.length || 0)
+        
+        // アルバムデータをTrack形式に変換
+        const tracksFromAlbums: Track[] = response.albums.map((album: any) => ({
+          id: album.album.id,
+          name: album.album.name,
+          artist: album.album.artists?.[0]?.name || 'Unknown Artist',
+          album: album.album.name,
+          imageUrl: album.album.images?.[0]?.url || 'https://via.placeholder.com/300x300',
+          playCount: album.count,
+          spotifyUrl: album.album.external_urls?.spotify,
+          albumUrl: album.album.external_urls?.spotify
+        }))
+        
+        setTracks(tracksFromAlbums)
       } catch (error) {
-        console.error('Dashboard: Network error:', error)
-        setError('ネットワークエラーが発生しました')
+        console.error('Dashboard: API error:', error)
+        if (error instanceof Error && error.message === 'Token expired') {
+          setError('トークンが期限切れです。再度ログインしてください')
+          localStorage.removeItem('spotify_token')
+        } else {
+          setError('曲の取得に失敗しました')
+        }
       } finally {
         setLoading(false)
       }

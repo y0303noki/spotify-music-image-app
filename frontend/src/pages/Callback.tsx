@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { api } from '../services/api'
 
 const Callback: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const code = urlParams.get('code')
-    const error = urlParams.get('error')
+    // Implicit Grant Flowでは、アクセストークンがURLのフラグメントに含まれる
+    const hash = window.location.hash.substring(1)
+    const params = new URLSearchParams(hash)
+    const accessToken = params.get('access_token')
+    const error = params.get('error')
 
-    console.log('Callback received:', { code: code ? 'present' : 'missing', error })
+    console.log('Callback received:', { accessToken: accessToken ? 'present' : 'missing', error })
 
     if (error) {
       console.error('Spotify authorization error:', error)
@@ -18,32 +19,17 @@ const Callback: React.FC = () => {
       return
     }
 
-    if (code) {
-      // URLから認証コードを削除して再利用を防ぐ
+    if (accessToken) {
+      // URLからトークンを削除して再利用を防ぐ
       const newUrl = window.location.pathname
       window.history.replaceState({}, document.title, newUrl)
 
-      // バックエンドにコードを送信してトークンを取得
-      const exchangeCodeForToken = async () => {
-        try {
-          console.log('Exchanging code for token...')
-          
-          const data = await api.exchangeToken(code)
-          console.log('Token received:', data.access_token ? 'success' : 'failed')
-          
-          localStorage.setItem('spotify_token', data.access_token)
-          console.log('Token stored in localStorage')
-          navigate('/dashboard')
-        } catch (error) {
-          console.error('Error exchanging code for token:', error)
-          alert('認証に失敗しました。再度ログインしてください。')
-          navigate('/')
-        }
-      }
-
-      exchangeCodeForToken()
+      console.log('Access token received:', accessToken ? 'success' : 'failed')
+      localStorage.setItem('spotify_token', accessToken)
+      console.log('Token stored in localStorage')
+      navigate('/dashboard')
     } else {
-      console.log('No authorization code found')
+      console.log('No access token found')
       navigate('/')
     }
   }, [navigate])

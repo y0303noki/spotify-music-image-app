@@ -14,7 +14,8 @@ const Login: React.FC = () => {
       return
     }
     
-    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
+    // Implicit Grant Flowを使用（response_type=token）
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
     
     window.location.href = authUrl
   }
