@@ -9,14 +9,18 @@ const Login: React.FC = () => {
     const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
     const scope = 'user-read-recently-played user-library-read'
     
+    console.log('Login: Client ID:', clientId)
+    console.log('Login: Redirect URI:', redirectUri)
+    
     if (!clientId || clientId === 'mock_client_id') {
       alert('Spotify Client IDが設定されていません。環境変数を確認してください。')
       return
     }
     
-    // Implicit Grant Flowを使用（response_type=token）
-    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
+    // Authorization Code Flowを使用（response_type=code）
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
     
+    console.log('Login: Auth URL:', authUrl)
     window.location.href = authUrl
   }
 
