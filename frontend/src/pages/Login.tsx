@@ -1,19 +1,12 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Login: React.FC = () => {
+  const navigate = useNavigate()
+
   const handleSpotifyLogin = () => {
-    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-    const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'http://127.0.0.1:8888/callback'
-    const scope = 'user-read-recently-played user-read-private user-library-read'
-    
-    if (!clientId || clientId === 'your_spotify_client_id_here') {
-      alert('Spotify Client IDが設定されていません。環境変数を確認してください。')
-      return
-    }
-    
-    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
-    
-    window.location.href = authUrl
+    // モック版では直接ダッシュボードに移動
+    navigate('/dashboard')
   }
 
   return (
@@ -32,7 +25,7 @@ const Login: React.FC = () => {
             onClick={handleSpotifyLogin}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-spotify-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spotify-green"
           >
-            Spotifyでログイン
+            Spotifyでログイン（モック版）
           </button>
         </div>
       </div>

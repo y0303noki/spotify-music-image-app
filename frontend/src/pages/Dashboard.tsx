@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MusicVisualizer from '../components/MusicVisualizer'
+import { api } from '../services/api'
 
 interface Track {
   id: string
@@ -21,60 +22,42 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('spotify_token')
-    console.log('Dashboard: Token check:', token ? 'present' : 'missing')
-    
-    if (!token) {
-      console.log('Dashboard: No token found, redirecting to login')
-      navigate('/')
-      return
-    }
-
     const fetchTracks = async () => {
       try {
-        console.log(`Dashboard: Fetching ${mode} tracks...`)
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_URL
-        console.log('Dashboard: API URL:', apiUrl)
+        console.log(`Dashboard: Fetching ${mode} tracks (mock)...`)
         
-        const endpoint = mode === 'recent' ? '/tracks/recent' : '/tracks/liked'
-        const response = await fetch(`${apiUrl}${endpoint}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        })
-
-        console.log('Dashboard: Response status:', response.status)
+        // モック版では直接APIサービスを使用
+        const response = mode === 'recent' 
+          ? await api.getRecentlyPlayed('mock_token')
+          : await api.getLikedTracks('mock_token')
         
-        if (response.ok) {
-          const data = await response.json()
-          console.log('Dashboard: Tracks received:', data.tracks?.length || 0)
-          setTracks(data.tracks)
-        } else {
-          const errorData = await response.json().catch(() => ({}))
-          console.error('Dashboard: Failed to fetch tracks:', errorData)
-          
-          // スコープ不足エラーの場合は特別なメッセージを表示
-          if (response.status === 403) {
-            setError('いいねした曲を取得するには、Spotifyで再度ログインしてください')
-            // トークンを削除して再ログインを促す
-            localStorage.removeItem('spotify_token')
-          } else {
-            setError('曲の取得に失敗しました')
-          }
-        }
+        console.log('Dashboard: Mock data received:', response.albums?.length || 0)
+        
+        // モックデータをTrack形式に変換
+        const mockTracks: Track[] = response.albums.map((album: any, index: number) => ({
+          id: album.album.id,
+          name: album.album.name,
+          artist: 'Mock Artist',
+          album: album.album.name,
+          imageUrl: album.album.images[0]?.url || 'https://via.placeholder.com/300x300',
+          playCount: album.count,
+          spotifyUrl: album.album.external_urls?.spotify,
+          albumUrl: album.album.external_urls?.spotify
+        }))
+        
+        setTracks(mockTracks)
       } catch (error) {
-        console.error('Dashboard: Network error:', error)
-        setError('ネットワークエラーが発生しました')
+        console.error('Dashboard: Mock data error:', error)
+        setError('モックデータの取得に失敗しました')
       } finally {
         setLoading(false)
       }
     }
 
     fetchTracks()
-  }, [navigate, mode])
+  }, [mode])
 
   const handleLogout = () => {
-    localStorage.removeItem('spotify_token')
     navigate('/')
   }
 
@@ -110,7 +93,7 @@ const Dashboard: React.FC = () => {
       {/* ヘッダー */}
       <div className="absolute top-0 left-0 right-0 z-40 p-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">あなたの音楽世界</h1>
+          <h1 className="text-3xl font-bold text-white">あなたの音楽世界（モック版）</h1>
           <div className="flex items-center space-x-4">
             {/* モード切り替えボタン */}
             <div className="flex bg-spotify-gray rounded-lg p-1">
