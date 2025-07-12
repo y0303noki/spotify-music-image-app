@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../services/api'
 
 const Callback: React.FC = () => {
   const navigate = useNavigate()
@@ -26,41 +27,16 @@ const Callback: React.FC = () => {
       const exchangeCodeForToken = async () => {
         try {
           console.log('Exchanging code for token...')
-          const apiUrl = import.meta.env.VITE_REACT_APP_API_URL
-          console.log('API URL:', apiUrl)
           
-          const response = await fetch(`${apiUrl}/auth/callback`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code }),
-          })
-
-          console.log('Response status:', response.status)
+          const data = await api.exchangeToken(code)
+          console.log('Token received:', data.access_token ? 'success' : 'failed')
           
-          if (response.ok) {
-            const data = await response.json()
-            console.log('Token received:', data.access_token ? 'success' : 'failed')
-            localStorage.setItem('spotify_token', data.access_token)
-            console.log('Token stored in localStorage')
-            navigate('/dashboard')
-          } else {
-            const errorData = await response.json().catch(() => ({}))
-            console.error('Token exchange failed:', errorData)
-            
-            // invalid_grantエラーの場合は特別な処理
-            if (errorData.details?.error === 'invalid_grant') {
-              console.log('Invalid grant error - redirecting to login')
-              navigate('/')
-            } else {
-              console.error('Token exchange failed:', errorData)
-              navigate('/')
-            }
-          }
+          localStorage.setItem('spotify_token', data.access_token)
+          console.log('Token stored in localStorage')
+          navigate('/dashboard')
         } catch (error) {
           console.error('Error exchanging code for token:', error)
-          alert('ネットワークエラーが発生しました')
+          alert('認証に失敗しました。再度ログインしてください。')
           navigate('/')
         }
       }

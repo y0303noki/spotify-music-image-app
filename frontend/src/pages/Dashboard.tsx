@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MusicVisualizer from '../components/MusicVisualizer'
-import { api } from '../services/api'
 
 interface Track {
   id: string
@@ -22,42 +21,71 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    const token = localStorage.getItem('spotify_token')
+    console.log('Dashboard: Token check:', token ? 'present' : 'missing')
+    
+    if (!token) {
+      console.log('Dashboard: No token found, redirecting to login')
+      navigate('/')
+      return
+    }
+
     const fetchTracks = async () => {
       try {
-        console.log(`Dashboard: Fetching ${mode} tracks (mock)...`)
+        console.log(`Dashboard: Fetching ${mode} tracks...`)
+        const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'https://y0303noki.github.io/spotify-music-image-app/'
+        console.log('Dashboard: API URL:', apiUrl)
         
-        // モック版では直接APIサービスを使用
-        const response = mode === 'recent' 
-          ? await api.getRecentlyPlayed('mock_token')
-          : await api.getLikedTracks('mock_token')
+        const endpoint = mode === 'recent' ? '/api/recently-played' : '/api/liked-tracks'
+        const response = await fetch(`${apiUrl}${endpoint}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
+
+        console.log('Dashboard: Response status:', response.status)
         
-        console.log('Dashboard: Mock data received:', response.albums?.length || 0)
-        
-        // モックデータをTrack形式に変換
-        const mockTracks: Track[] = response.albums.map((album: any, index: number) => ({
-          id: album.album.id,
-          name: album.album.name,
-          artist: 'Mock Artist',
-          album: album.album.name,
-          imageUrl: album.album.images[0]?.url || 'https://via.placeholder.com/300x300',
-          playCount: album.count,
-          spotifyUrl: album.album.external_urls?.spotify,
-          albumUrl: album.album.external_urls?.spotify
-        }))
-        
-        setTracks(mockTracks)
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Dashboard: Albums received:', data.albums?.length || 0)
+          
+          // アルバムデータをTrack形式に変換
+          const tracksFromAlbums: Track[] = data.albums.map((album: any) => ({
+            id: album.album.id,
+            name: album.album.name,
+            artist: album.album.artists?.[0]?.name || 'Unknown Artist',
+            album: album.album.name,
+            imageUrl: album.album.images?.[0]?.url || 'https://via.placeholder.com/300x300',
+            playCount: album.count,
+            spotifyUrl: album.album.external_urls?.spotify,
+            albumUrl: album.album.external_urls?.spotify
+          }))
+          
+          setTracks(tracksFromAlbums)
+        } else {
+          const errorData = await response.json().catch(() => ({}))
+          console.error('Dashboard: Failed to fetch tracks:', errorData)
+          
+          if (response.status === 401) {
+            setError('トークンが期限切れです。再度ログインしてください')
+            localStorage.removeItem('spotify_token')
+          } else {
+            setError('曲の取得に失敗しました')
+          }
+        }
       } catch (error) {
-        console.error('Dashboard: Mock data error:', error)
-        setError('モックデータの取得に失敗しました')
+        console.error('Dashboard: Network error:', error)
+        setError('ネットワークエラーが発生しました')
       } finally {
         setLoading(false)
       }
     }
 
     fetchTracks()
-  }, [mode])
+  }, [navigate, mode])
 
   const handleLogout = () => {
+    localStorage.removeItem('spotify_token')
     navigate('/')
   }
 
@@ -93,7 +121,7 @@ const Dashboard: React.FC = () => {
       {/* ヘッダー */}
       <div className="absolute top-0 left-0 right-0 z-40 p-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">あなたの音楽世界（モック版）</h1>
+          <h1 className="text-3xl font-bold text-white">あなたの音楽世界</h1>
           <div className="flex items-center space-x-4">
             {/* モード切り替えボタン */}
             <div className="flex bg-spotify-gray rounded-lg p-1">
