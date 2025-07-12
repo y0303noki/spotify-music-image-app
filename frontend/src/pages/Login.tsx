@@ -5,10 +5,15 @@ const Login: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log('Login component mounted')
+    console.log('Current URL:', window.location.href)
+    
     // URLから認証コードを確認
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get('code')
     const error = urlParams.get('error')
+
+    console.log('URL params:', { code: code ? 'present' : 'missing', error })
 
     if (code) {
       console.log('Login: Found authorization code, redirecting to callback')
@@ -73,6 +78,11 @@ const Login: React.FC = () => {
     window.location.href = authUrl
   }
 
+  const handleTestClick = () => {
+    console.log('Test button clicked')
+    alert('テストボタンがクリックされました。JavaScriptは正常に動作しています。')
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-spotify-black">
       <div className="max-w-md w-full space-y-8">
@@ -90,6 +100,12 @@ const Login: React.FC = () => {
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-spotify-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spotify-green"
           >
             Spotifyでログイン
+          </button>
+          <button
+            onClick={handleTestClick}
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            テストボタン（JavaScript動作確認）
           </button>
         </div>
       </div>
