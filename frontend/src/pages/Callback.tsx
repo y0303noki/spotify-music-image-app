@@ -7,6 +7,9 @@ const Callback: React.FC = () => {
   useEffect(() => {
     console.log('Callback page loaded')
     console.log('Current URL:', window.location.href)
+    console.log('Current pathname:', window.location.pathname)
+    console.log('Current search:', window.location.search)
+    console.log('Current hash:', window.location.hash)
     
     // URLから認証コードを取得
     const urlParams = new URLSearchParams(window.location.search)
@@ -14,6 +17,7 @@ const Callback: React.FC = () => {
     const error = urlParams.get('error')
 
     console.log('Callback received:', { code: code ? 'present' : 'missing', error })
+    console.log('Full URL params:', Object.fromEntries(urlParams.entries()))
 
     if (error) {
       console.error('Spotify authorization error:', error)
@@ -22,6 +26,8 @@ const Callback: React.FC = () => {
     }
 
     if (code) {
+      console.log('Authorization code found:', code.substring(0, 20) + '...')
+      
       // URLから認証コードを削除して再利用を防ぐ
       const newUrl = window.location.pathname
       window.history.replaceState({}, document.title, newUrl)
