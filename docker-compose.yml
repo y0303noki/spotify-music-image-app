@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8888:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_REACT_APP_API_URL=http://127.0.0.1:8000
+      - VITE_REACT_APP_REDIRECT_URI=http://127.0.0.1:8888/callback
+      - VITE_SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - VITE_DEV_SERVER_URL=http://127.0.0.1:8888
+    depends_on:
+      - backend
+    networks:
+      - spotify-app
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - REDIRECT_URI=http://127.0.0.1:8888/callback
+      - FRONTEND_URL=http://127.0.0.1:3000
+    networks:
+      - spotify-app
+
+networks:
+  spotify-app:
+    driver: bridge 
