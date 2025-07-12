@@ -22,12 +22,9 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
   useEffect(() => {
     if (tracks.length === 0) return
 
-    // メインの曲/アルバム（最も聴いたもの）
-    const mainTrack = tracks[0]
-    
     // その他の曲/アルバムを無作為に配置
     const otherTracks = tracks.slice(1)
-    const newPositions = otherTracks.map((track, index) => {
+    const newPositions = otherTracks.map((track: Track) => {
       // ランダムな位置を生成（中央を避ける）
       const angle = Math.random() * 2 * Math.PI
       const distance = 200 + Math.random() * 400 // 中央から200-600pxの距離
@@ -92,7 +89,7 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
       </div>
 
       {/* その他の曲/アルバムを無作為に配置 */}
-      {tracks.slice(1).map((track, index) => {
+      {tracks.slice(1).map((track: Track, index: number) => {
         const position = positions[index]
         if (!position) return null
 
@@ -144,7 +141,7 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
       })}
 
       {/* 背景を埋めるための追加画像（画面の隙間を埋める） */}
-      {Array.from({ length: Math.max(0, 20 - tracks.length) }).map((_, index) => {
+      {Array.from({ length: Math.max(0, 20 - tracks.length) }).map((_, index: number) => {
         const randomTrack = tracks[Math.floor(Math.random() * tracks.length)]
         if (!randomTrack) return null
 

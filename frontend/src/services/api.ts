@@ -1,6 +1,5 @@
 // 環境変数のデフォルト値
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
-const API_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8000';
 const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'http://localhost:8888/callback';
 
 // モックデータ
@@ -66,7 +65,7 @@ export const api = {
   },
 
   // トークン交換（モック）
-  exchangeToken: async (code: string) => {
+  exchangeToken: async (_code: string) => {
     return {
       access_token: 'mock_access_token',
       refresh_token: 'mock_refresh_token',
@@ -75,13 +74,13 @@ export const api = {
   },
 
   // 最近再生した楽曲を取得（モック）
-  getRecentlyPlayed: async (accessToken: string) => {
+  getRecentlyPlayed: async (_accessToken: string) => {
     // モックデータを返す
     return { albums: mockAlbums };
   },
 
   // お気に入り楽曲を取得（モック）
-  getLikedTracks: async (accessToken: string) => {
+  getLikedTracks: async (_accessToken: string) => {
     // モックデータを返す
     return { albums: mockAlbums.slice(0, 3) };
   }
