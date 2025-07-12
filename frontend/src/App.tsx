@@ -44,8 +44,12 @@ function App() {
     console.log('Code in App:', code ? 'present' : 'missing')
   }, [])
 
+  // ローカル環境かどうかを判定
+  const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+  const basename = isLocalhost ? '' : '/spotify-music-image-app'
+
   return (
-    <Router basename="/spotify-music-image-app">
+    <Router basename={basename}>
       <div className="App">
         <Routes>
           <Route path="/" element={<RootCallback />} />

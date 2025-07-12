@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('spotify_token')
+    const token = localStorage.getItem('spotify_access_token')
     console.log('Dashboard: Token check:', token ? 'present' : 'missing')
     
     if (!token) {
@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
         console.error('Dashboard: API error:', error)
         if (error instanceof Error && error.message === 'Token expired') {
           setError('トークンが期限切れです。再度ログインしてください')
-          localStorage.removeItem('spotify_token')
+          localStorage.removeItem('spotify_access_token')
         } else {
           setError('曲の取得に失敗しました')
         }
@@ -71,7 +71,8 @@ const Dashboard: React.FC = () => {
   }, [navigate, mode])
 
   const handleLogout = () => {
-    localStorage.removeItem('spotify_token')
+    localStorage.removeItem('spotify_access_token')
+    localStorage.removeItem('spotify_refresh_token')
     navigate('/')
   }
 
@@ -108,7 +109,7 @@ const Dashboard: React.FC = () => {
       <div className="absolute top-0 left-0 right-0 z-40 p-4">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">あなたの音楽世界</h1>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x4">
             {/* モード切り替えボタン */}
             <div className="flex bg-spotify-gray rounded-lg p-1">
               <button

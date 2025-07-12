@@ -5,6 +5,7 @@ const Callback: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    alert('Callback component is executing!')
     console.log('Callback page loaded')
     console.log('Current URL:', window.location.href)
     console.log('Current pathname:', window.location.pathname)
@@ -16,11 +17,16 @@ const Callback: React.FC = () => {
     const code = urlParams.get('code')
     const error = urlParams.get('error')
 
+    console.log('URL Search Params:', window.location.search)
+    console.log('URLSearchParams entries:', Array.from(urlParams.entries()))
+    console.log('Code from URLSearchParams:', code)
+    console.log('Error from URLSearchParams:', error)
     console.log('Callback received:', { code: code ? 'present' : 'missing', error })
     console.log('Full URL params:', Object.fromEntries(urlParams.entries()))
 
     if (error) {
       console.error('Spotify authorization error:', error)
+      alert('認証エラーが発生しました: ' + error)
       navigate('/')
       return
     }
@@ -32,40 +38,53 @@ const Callback: React.FC = () => {
       const newUrl = window.location.pathname
       window.history.replaceState({}, document.title, newUrl)
 
-      // クライアントサイドでトークン交換を行う
+      // バックエンドでトークン交換を行う
       exchangeCodeForToken(code)
     } else {
       console.log('No authorization code found')
+      console.log('Available URL parameters:', Array.from(urlParams.keys()))
+      alert('認証コードが見つかりませんでした')
       navigate('/')
     }
   }, [navigate])
 
   const exchangeCodeForToken = async (code: string) => {
     try {
-      console.log('Exchanging code for token...')
+      console.log('Exchanging code for token via backend...')
       
-      // クライアントサイドでトークン交換を行う
-      // 注意: この方法はセキュリティ上の理由で推奨されませんが、デモ用として実装
-      const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-      const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
+      const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:8000'
+      console.log('API URL:', apiUrl)
       
-      console.log('Client ID:', clientId)
-      console.log('Redirect URI:', redirectUri)
+      const response = await fetch(`${apiUrl}/auth/callback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Token exchange failed:', errorData)
+        throw new Error(errorData.error || 'Token exchange failed')
+      }
+
+      const tokenData = await response.json()
+      console.log('Token exchange successful')
       
-      // 実際のアプリケーションでは、バックエンドでトークン交換を行うべきです
-      // ここではデモ用に、認証コードをlocalStorageに保存して、後で処理する
-      localStorage.setItem('spotify_auth_code', code)
+      // アクセストークンをlocalStorageに保存
+      localStorage.setItem('spotify_access_token', tokenData.access_token)
+      if (tokenData.refresh_token) {
+        localStorage.setItem('spotify_refresh_token', tokenData.refresh_token)
+      }
       
-      // デモ用: 認証コードをアクセストークンとして使用（実際には無効）
-      // 実際のアプリケーションでは、バックエンドでトークン交換を行う必要があります
-      console.log('Auth code stored for demo purposes')
-      alert('デモ版: 認証コードを保存しました。実際のアプリケーションではバックエンドでのトークン交換が必要です。')
+      console.log('Tokens stored successfully')
       
-      // デモ用にダッシュボードに移動
+      // ダッシュボードに移動
       navigate('/dashboard')
     } catch (error) {
       console.error('Error exchanging code for token:', error)
-      alert('認証に失敗しました。再度ログインしてください。')
+      alert('認証に失敗しました: ' + (error instanceof Error ? error.message : 'Unknown error'))
       navigate('/')
     }
   }
