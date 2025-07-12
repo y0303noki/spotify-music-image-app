@@ -93,6 +93,9 @@ const Login: React.FC = () => {
           <p className="mt-2 text-center text-sm text-gray-400">
             最近聴いた曲のジャケット写真を見てみましょう
           </p>
+          <p className="mt-2 text-center text-xs text-gray-500">
+            デバッグ: このページが表示されていれば、基本的なレンダリングは正常です
+          </p>
         </div>
         <div className="mt-8 space-y-6">
           <button
