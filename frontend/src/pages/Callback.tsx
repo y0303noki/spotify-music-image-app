@@ -5,7 +5,10 @@ const Callback: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Authorization Code Flowでは、認証コードがURLのクエリパラメータに含まれる
+    console.log('Callback page loaded')
+    console.log('Current URL:', window.location.href)
+    
+    // URLから認証コードを取得
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get('code')
     const error = urlParams.get('error')
@@ -39,6 +42,9 @@ const Callback: React.FC = () => {
       // 注意: この方法はセキュリティ上の理由で推奨されませんが、デモ用として実装
       const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
       const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
+      
+      console.log('Client ID:', clientId)
+      console.log('Redirect URI:', redirectUri)
       
       // 実際のアプリケーションでは、バックエンドでトークン交換を行うべきです
       // ここではデモ用に、認証コードをlocalStorageに保存して、後で処理する

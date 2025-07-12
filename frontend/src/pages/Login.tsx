@@ -1,8 +1,57 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // URLから認証コードを確認
+    const urlParams = new URLSearchParams(window.location.search)
+    const code = urlParams.get('code')
+    const error = urlParams.get('error')
+
+    if (code) {
+      console.log('Login: Found authorization code, redirecting to callback')
+      // 認証コードがある場合はコールバック処理を行う
+      handleCallback(code)
+    } else if (error) {
+      console.error('Login: Authorization error:', error)
+      alert('認証エラーが発生しました。')
+    }
+  }, [navigate])
+
+  const handleCallback = async (code: string) => {
+    try {
+      console.log('Login: Exchanging code for token...')
+      
+      // クライアントサイドでトークン交換を行う
+      // 注意: この方法はセキュリティ上の理由で推奨されませんが、デモ用として実装
+      const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
+      const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
+      
+      console.log('Login: Client ID:', clientId)
+      console.log('Login: Redirect URI:', redirectUri)
+      
+      // 実際のアプリケーションでは、バックエンドでトークン交換を行うべきです
+      // ここではデモ用に、認証コードをlocalStorageに保存して、後で処理する
+      localStorage.setItem('spotify_auth_code', code)
+      
+      // デモ用: 認証コードをアクセストークンとして使用（実際には無効）
+      // 実際のアプリケーションでは、バックエンドでトークン交換を行う必要があります
+      console.log('Login: Auth code stored for demo purposes')
+      alert('デモ版: 認証コードを保存しました。実際のアプリケーションではバックエンドでのトークン交換が必要です。')
+      
+      // URLから認証コードを削除
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, document.title, newUrl)
+      
+      // デモ用にダッシュボードに移動
+      navigate('/dashboard')
+    } catch (error) {
+      console.error('Login: Error exchanging code for token:', error)
+      alert('認証に失敗しました。再度ログインしてください。')
+    }
+  }
 
   const handleSpotifyLogin = () => {
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
