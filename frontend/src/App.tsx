@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Callback from './pages/Callback'
 import Dashboard from './pages/Dashboard'
@@ -11,8 +11,15 @@ const RootCallback: React.FC = () => {
   const location = useLocation()
 
   useEffect(() => {
+    console.log('RootCallback component mounted')
+    console.log('Location pathname:', location.pathname)
+    console.log('Location search:', location.search)
+    console.log('Location hash:', location.hash)
+    
     const urlParams = new URLSearchParams(location.search)
     const code = urlParams.get('code')
+    
+    console.log('Code in RootCallback:', code ? 'present' : 'missing')
     
     if (code) {
       console.log('Code found in root path, redirecting to callback')
@@ -30,10 +37,15 @@ function App() {
     console.log('Current pathname:', window.location.pathname)
     console.log('Current search:', window.location.search)
     console.log('Current hash:', window.location.hash)
+    
+    // クエリパラメータを直接チェック
+    const urlParams = new URLSearchParams(window.location.search)
+    const code = urlParams.get('code')
+    console.log('Code in App:', code ? 'present' : 'missing')
   }, [])
 
   return (
-    <Router>
+    <Router basename="/spotify-music-image-app">
       <div className="App">
         <Routes>
           <Route path="/" element={<RootCallback />} />
