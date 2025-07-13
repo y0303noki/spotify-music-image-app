@@ -77,7 +77,14 @@ const Login: React.FC = () => {
     console.log('Login: Auth URL:', authUrl)
     console.log('Login: Auth URL redirect_uri param:', encodeURIComponent(redirectUri))
     console.log('Login: Auth URL full:', authUrl)
-    window.location.href = authUrl
+    
+    // エラーハンドリングを追加
+    try {
+      window.location.href = authUrl
+    } catch (error) {
+      console.error('Login: Error redirecting to Spotify:', error)
+      alert('Spotifyへのリダイレクトでエラーが発生しました。')
+    }
   }
 
   const handleTestClick = () => {
