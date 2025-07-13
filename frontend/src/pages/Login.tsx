@@ -75,6 +75,8 @@ const Login: React.FC = () => {
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
     
     console.log('Login: Auth URL:', authUrl)
+    console.log('Login: Auth URL redirect_uri param:', encodeURIComponent(redirectUri))
+    console.log('Login: Auth URL full:', authUrl)
     window.location.href = authUrl
   }
 
