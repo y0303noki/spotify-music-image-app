@@ -82,19 +82,53 @@ app.get('/tracks/recent', async (req, res) => {
     }
 
     const accessToken = authHeader.split(' ')[1]
+    
+    // クエリパラメータから取得数を取得（デフォルト200）
+    const limit = parseInt(req.query.limit) || 200
+    const maxLimit = 1000 // 最大1000曲まで
+    
+    if (limit > maxLimit) {
+      return res.status(400).json({ error: `Limit cannot exceed ${maxLimit}` })
+    }
 
-    // Get recently played tracks
-    const tracksResponse = await axios.get('https://api.spotify.com/v1/me/player/recently-played?limit=50', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
+    // Get recently played tracks with pagination
+    let allRecentTracks = []
+    let offset = 0
+    const pageSize = 50
+    
+    // 必要なページ数を計算
+    const totalPages = Math.ceil(limit / pageSize)
+    
+    for (let i = 0; i < totalPages; i++) {
+      const tracksResponse = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?limit=${pageSize}&after=${offset}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+      
+      const tracks = tracksResponse.data.items
+      if (tracks.length === 0) break
+      
+      allRecentTracks = allRecentTracks.concat(tracks)
+      
+      // 次のページのオフセットを設定（最後のトラックの再生時刻を使用）
+      if (tracks.length > 0) {
+        const lastTrack = tracks[tracks.length - 1]
+        offset = new Date(lastTrack.played_at).getTime()
       }
-    })
+      
+      // 取得数に達したら停止
+      if (allRecentTracks.length >= limit) {
+        allRecentTracks = allRecentTracks.slice(0, limit)
+        break
+      }
+    }
 
     // Process tracks and count play frequency
     const trackCounts = {}
     const trackDetails = {}
 
-    tracksResponse.data.items.forEach(item => {
+    allRecentTracks.forEach(item => {
       const trackId = item.track.id
       const trackName = item.track.name
       const artistName = item.track.artists[0].name
@@ -124,7 +158,7 @@ app.get('/tracks/recent', async (req, res) => {
       playCount: trackCounts[trackId]
     })).sort((a, b) => b.playCount - a.playCount)
 
-    res.json({ tracks })
+    res.json({ tracks, totalFetched: allRecentTracks.length, requestedLimit: limit })
   } catch (error) {
     console.error('Error fetching recent tracks:', error.response?.data || error.message)
     res.status(500).json({ error: 'Failed to fetch recent tracks' })
@@ -139,15 +173,25 @@ app.get('/tracks/liked', async (req, res) => {
     }
 
     const accessToken = authHeader.split(' ')[1]
+    
+    // クエリパラメータから取得数を取得（デフォルト200）
+    const limit = parseInt(req.query.limit) || 200
+    const maxLimit = 1000 // 最大1000曲まで
+    
+    if (limit > maxLimit) {
+      return res.status(400).json({ error: `Limit cannot exceed ${maxLimit}` })
+    }
 
-    // Get liked tracks with pagination (up to 200 tracks)
+    // Get liked tracks with pagination
     let allLikedTracks = []
     let offset = 0
-    const limit = 50
+    const pageSize = 50
     
-    // Fetch up to 4 pages (200 tracks total)
-    for (let i = 0; i < 4; i++) {
-      const likedTracksResponse = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`, {
+    // 必要なページ数を計算
+    const totalPages = Math.ceil(limit / pageSize)
+    
+    for (let i = 0; i < totalPages; i++) {
+      const likedTracksResponse = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=${pageSize}&offset=${offset}`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
@@ -157,7 +201,13 @@ app.get('/tracks/liked', async (req, res) => {
       if (tracks.length === 0) break
       
       allLikedTracks = allLikedTracks.concat(tracks)
-      offset += limit
+      offset += pageSize
+      
+      // 取得数に達したら停止
+      if (allLikedTracks.length >= limit) {
+        allLikedTracks = allLikedTracks.slice(0, limit)
+        break
+      }
     }
 
     // Process liked tracks and count by album
@@ -205,7 +255,7 @@ app.get('/tracks/liked', async (req, res) => {
       playCount: albumCounts[albumId]
     })).sort((a, b) => b.playCount - a.playCount)
 
-    res.json({ tracks: albums })
+    res.json({ tracks: albums, totalFetched: allLikedTracks.length, requestedLimit: limit })
   } catch (error) {
     console.error('Error fetching liked tracks:', error.response?.data || error.message)
     

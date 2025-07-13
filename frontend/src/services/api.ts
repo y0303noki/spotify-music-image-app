@@ -1,6 +1,8 @@
 // 環境変数のデフォルト値
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
 const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback';
+// ブラウザからアクセス可能なURLを使用
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export const api = {
   // Spotify認証URLを取得
@@ -18,10 +20,10 @@ export const api = {
     throw new Error('Client-side token exchange not supported');
   },
 
-  // 最近再生した楽曲を取得（直接Spotify APIを呼び出し）
-  getRecentlyPlayed: async (accessToken: string) => {
+  // 最近再生した楽曲を取得（バックエンドAPIを使用）
+  getRecentlyPlayed: async (accessToken: string, limit: number = 200) => {
     try {
-      const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=50', {
+      const response = await fetch(`${API_BASE_URL}/tracks/recent?limit=${limit}`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         },
@@ -35,35 +37,30 @@ export const api = {
       }
 
       const data = await response.json();
-
-      // アルバムごとにグループ化して再生回数をカウント
-      const albumCounts: any = {};
-      data.items.forEach((item: any) => {
-        const albumId = item.track.album.id;
-        if (!albumCounts[albumId]) {
-          albumCounts[albumId] = {
-            album: item.track.album,
-            count: 0,
-            tracks: []
-          };
-        }
-        albumCounts[albumId].count++;
-        albumCounts[albumId].tracks.push(item.track);
-      });
-
-      const albums = Object.values(albumCounts).sort((a: any, b: any) => b.count - a.count);
       
-      return { albums };
+      // バックエンドから返される形式に合わせて変換
+      const albums = data.tracks.map((track: any) => ({
+        album: {
+          id: track.id,
+          name: track.name,
+          artists: [{ name: track.artist }],
+          images: [{ url: track.imageUrl }],
+          external_urls: { spotify: track.spotifyUrl }
+        },
+        count: track.playCount
+      }));
+      
+      return { albums, totalFetched: data.totalFetched, requestedLimit: data.requestedLimit };
     } catch (error) {
       console.error('Recently played error:', error);
       throw error;
     }
   },
 
-  // お気に入り楽曲を取得（直接Spotify APIを呼び出し）
-  getLikedTracks: async (accessToken: string) => {
+  // お気に入り楽曲を取得（バックエンドAPIを使用）
+  getLikedTracks: async (accessToken: string, limit: number = 200) => {
     try {
-      const response = await fetch('https://api.spotify.com/v1/me/tracks?limit=50', {
+      const response = await fetch(`${API_BASE_URL}/tracks/liked?limit=${limit}`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         },
@@ -77,25 +74,20 @@ export const api = {
       }
 
       const data = await response.json();
-
-      // アルバムごとにグループ化してカウント
-      const albumCounts: any = {};
-      data.items.forEach((item: any) => {
-        const albumId = item.track.album.id;
-        if (!albumCounts[albumId]) {
-          albumCounts[albumId] = {
-            album: item.track.album,
-            count: 0,
-            tracks: []
-          };
-        }
-        albumCounts[albumId].count++;
-        albumCounts[albumId].tracks.push(item.track);
-      });
-
-      const albums = Object.values(albumCounts).sort((a: any, b: any) => b.count - a.count);
       
-      return { albums };
+      // バックエンドから返される形式に合わせて変換
+      const albums = data.tracks.map((album: any) => ({
+        album: {
+          id: album.id,
+          name: album.name,
+          artists: [{ name: album.artist }],
+          images: [{ url: album.imageUrl }],
+          external_urls: { spotify: album.albumUrl }
+        },
+        count: album.playCount
+      }));
+      
+      return { albums, totalFetched: data.totalFetched, requestedLimit: data.requestedLimit };
     } catch (error) {
       console.error('Liked tracks error:', error);
       throw error;

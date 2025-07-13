@@ -52,7 +52,8 @@ const Callback: React.FC = () => {
     try {
       console.log('Exchanging code for token via backend...')
       
-      const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:8000'
+      // ブラウザからアクセス可能なURLを使用
+      const apiUrl = 'http://127.0.0.1:8000'
       console.log('API URL:', apiUrl)
       
       const response = await fetch(`${apiUrl}/auth/callback`, {

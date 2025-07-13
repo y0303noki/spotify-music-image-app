@@ -19,6 +19,9 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [mode, setMode] = useState<'recent' | 'liked'>('recent')
+  const [trackLimit, setTrackLimit] = useState<number>(200)
+  const [showSettings, setShowSettings] = useState(false)
+  const [totalFetched, setTotalFetched] = useState<number>(0)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -33,13 +36,14 @@ const Dashboard: React.FC = () => {
 
     const fetchTracks = async () => {
       try {
-        console.log(`Dashboard: Fetching ${mode} tracks...`)
+        console.log(`Dashboard: Fetching ${mode} tracks with limit ${trackLimit}...`)
         
         const response = mode === 'recent' 
-          ? await api.getRecentlyPlayed(token)
-          : await api.getLikedTracks(token)
+          ? await api.getRecentlyPlayed(token, trackLimit)
+          : await api.getLikedTracks(token, trackLimit)
         
         console.log('Dashboard: Albums received:', response.albums?.length || 0)
+        console.log('Dashboard: Total fetched:', response.totalFetched || 0)
         
         // アルバムデータをTrack形式に変換
         const tracksFromAlbums: Track[] = response.albums.map((album: any) => ({
@@ -54,6 +58,7 @@ const Dashboard: React.FC = () => {
         }))
         
         setTracks(tracksFromAlbums)
+        setTotalFetched(response.totalFetched || 0)
       } catch (error) {
         console.error('Dashboard: API error:', error)
         if (error instanceof Error && error.message === 'Token expired') {
@@ -68,12 +73,17 @@ const Dashboard: React.FC = () => {
     }
 
     fetchTracks()
-  }, [navigate, mode])
+  }, [navigate, mode, trackLimit])
 
   const handleLogout = () => {
     localStorage.removeItem('spotify_access_token')
     localStorage.removeItem('spotify_refresh_token')
     navigate('/')
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    setTrackLimit(newLimit)
+    setLoading(true)
   }
 
   if (loading) {
@@ -82,6 +92,7 @@ const Dashboard: React.FC = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-spotify-green mx-auto"></div>
           <p className="mt-4 text-white">曲を読み込み中...</p>
+          <p className="mt-2 text-sm text-gray-400">取得数: {trackLimit}曲</p>
         </div>
       </div>
     )
@@ -138,8 +149,39 @@ const Dashboard: React.FC = () => {
                 いいねした曲
               </button>
             </div>
+            
+            {/* 設定ボタン */}
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="w-full sm:w-auto bg-spotify-gray text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
+            >
+              設定
+            </button>
           </div>
         </div>
+        
+        {/* 設定パネル */}
+        {showSettings && (
+          <div className="mt-4 p-4 bg-spotify-gray/80 backdrop-blur-sm rounded-lg">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <label className="text-white text-sm sm:text-base">
+                取得曲数:
+              </label>
+              <select
+                value={trackLimit}
+                onChange={(e) => handleLimitChange(parseInt(e.target.value))}
+                className="bg-spotify-black text-white px-3 py-2 rounded border border-gray-600 text-sm sm:text-base"
+              >
+                <option value={200}>200曲</option>
+                <option value={500}>500曲</option>
+                <option value={1000}>1000曲</option>
+              </select>
+              <span className="text-gray-300 text-xs sm:text-sm">
+                実際に取得: {totalFetched}曲
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ログアウトボタン - 右下の小さなアイコンボタン */}

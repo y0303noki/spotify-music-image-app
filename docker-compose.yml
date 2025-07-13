@@ -11,7 +11,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_REACT_APP_API_URL=http://127.0.0.1:8000
+      - VITE_REACT_APP_API_URL=http://backend:8000
       - VITE_REACT_APP_REDIRECT_URI=http://127.0.0.1:8888/callback
       - VITE_SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - VITE_DEV_SERVER_URL=http://127.0.0.1:8888
