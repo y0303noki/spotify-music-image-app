@@ -182,13 +182,9 @@ const Dashboard: React.FC = () => {
               {/* スクリーンショットボタン */}
               <button
                 onClick={handleScreenshotMode}
-                className={`px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
-                  screenshotMode
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-spotify-green hover:bg-green-600 text-white'
-                }`}
+                className="px-4 py-2 rounded-lg transition-colors text-sm sm:text-base bg-spotify-green hover:bg-green-600 text-white"
               >
-                {screenshotMode ? '撮影完了' : 'スクリーンショット'}
+                スクリーンショット
               </button>
             </div>
           </div>
@@ -210,11 +206,19 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* スクリーンショットモード時のインジケーター */}
+      {/* スクリーンショットモード時の専用ボタン */}
       {screenshotMode && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
-            スクリーンショットモード - UI要素を非表示中
+          <div className="flex flex-col items-center space-y-2">
+            <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+              スクリーンショットモード - UI要素を非表示中
+            </div>
+            <button
+              onClick={handleScreenshotMode}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-colors shadow-lg"
+            >
+              撮影完了
+            </button>
           </div>
         </div>
       )}
