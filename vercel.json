@@ -19,5 +19,11 @@
       "src": "/health",
       "dest": "backend/src/index.js"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "gh-pages": false
+    }
+  }
 } 
