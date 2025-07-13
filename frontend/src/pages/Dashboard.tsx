@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   const [trackLimit, setTrackLimit] = useState<number>(200)
   const [showSettings, setShowSettings] = useState(false)
   const [totalFetched, setTotalFetched] = useState<number>(0)
+  const [screenshotMode, setScreenshotMode] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -78,6 +79,10 @@ const Dashboard: React.FC = () => {
     setLoading(true)
   }
 
+  const handleScreenshotMode = () => {
+    setScreenshotMode(!screenshotMode)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-spotify-black">
@@ -109,7 +114,9 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-spotify-black">
       {/* ヘッダー - レスポンシブ対応 */}
-      <div className="absolute top-0 left-0 right-0 z-40 p-2 sm:p-4">
+      <div className={`absolute top-0 left-0 right-0 z-40 p-2 sm:p-4 transition-all duration-300 ${
+        screenshotMode ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      }`}>
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
           {/* タイトル */}
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white text-center sm:text-left">
@@ -171,13 +178,27 @@ const Dashboard: React.FC = () => {
               <span className="text-gray-300 text-xs sm:text-sm">
                 実際に取得: {totalFetched}曲
               </span>
+              
+              {/* スクリーンショットボタン */}
+              <button
+                onClick={handleScreenshotMode}
+                className={`px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
+                  screenshotMode
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-spotify-green hover:bg-green-600 text-white'
+                }`}
+              >
+                {screenshotMode ? '撮影完了' : 'スクリーンショット'}
+              </button>
             </div>
           </div>
         )}
       </div>
 
       {/* ログアウトボタン - 右下の小さなアイコンボタン */}
-      <div className="absolute bottom-4 right-4 z-50">
+      <div className={`absolute bottom-4 right-4 z-50 transition-all duration-300 ${
+        screenshotMode ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      }`}>
         <button
           onClick={handleLogout}
           className="w-10 h-10 bg-spotify-gray/50 hover:bg-spotify-gray/70 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm"
@@ -188,6 +209,15 @@ const Dashboard: React.FC = () => {
           </svg>
         </button>
       </div>
+
+      {/* スクリーンショットモード時のインジケーター */}
+      {screenshotMode && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+            スクリーンショットモード - UI要素を非表示中
+          </div>
+        </div>
+      )}
 
       {/* 音楽ビジュアライザー */}
       <MusicVisualizer tracks={tracks} mode={mode} />
