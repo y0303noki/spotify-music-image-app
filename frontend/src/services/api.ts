@@ -1,7 +1,8 @@
 // 環境変数のデフォルト値
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
-const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback';
-// ブラウザからアクセス可能なURLを使用
+const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback';
+
+// ローカルバックエンドを使用（開発・本番環境共通）
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export const api = {

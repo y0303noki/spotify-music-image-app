@@ -52,8 +52,8 @@ const Callback: React.FC = () => {
     try {
       console.log('Exchanging code for token via backend...')
       
-      // ブラウザからアクセス可能なURLを使用
-      const apiUrl = 'http://127.0.0.1:8000'
+      // ローカルバックエンドを使用（開発・本番環境共通）
+      const apiUrl = 'http://127.0.0.1:8000';
       console.log('API URL:', apiUrl)
       
       const response = await fetch(`${apiUrl}/auth/callback`, {
