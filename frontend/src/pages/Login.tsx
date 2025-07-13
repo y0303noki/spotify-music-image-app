@@ -32,7 +32,7 @@ const Login: React.FC = () => {
       // クライアントサイドでトークン交換を行う
       // 注意: この方法はセキュリティ上の理由で推奨されませんが、デモ用として実装
       const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-      const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
+      const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback'
       
       console.log('Login: Client ID:', clientId)
       console.log('Login: Redirect URI:', redirectUri)
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
 
   const handleSpotifyLogin = () => {
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-    const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/#/callback'
+    const redirectUri = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback'
     const scope = 'user-read-recently-played user-library-read'
     
     console.log('Login: Client ID:', clientId)
