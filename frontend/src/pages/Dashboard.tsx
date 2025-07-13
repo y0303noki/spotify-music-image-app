@@ -230,7 +230,7 @@ const Dashboard: React.FC = () => {
               UI要素を非表示にしてクリーンな画像を撮影できます。
             </p>
             <p className="text-spotify-green text-sm font-semibold mb-4">
-              📸 撮影後は画面右上のボタンをタップして「戻る」をクリックしてください
+              📸 撮影後は画面右上のボタンを<span className="sm:hidden">タップ</span><span className="hidden sm:inline">クリック</span>して「戻る」を<span className="sm:hidden">タップ</span><span className="hidden sm:inline">クリック</span>してください
             </p>
             <div className="text-gray-400 text-xs">
               3秒後に自動でスクリーンショットモードに移行します...
@@ -239,17 +239,32 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* スクリーンショットモード時のスマホ対応透明ボタン */}
+      {/* スクリーンショットモード時の透明ボタン - スマホでは非表示、タップで表示 */}
       {screenshotMode && (
-        <div className="absolute top-2 right-2 z-50 sm:opacity-0 sm:hover:opacity-100 transition-opacity duration-300 group">
+        <div className="absolute top-2 right-2 z-50">
           <button
             onClick={() => setScreenshotMode(false)}
-            className="bg-red-600/80 hover:bg-red-600 text-white px-4 py-3 sm:px-3 sm:py-2 rounded-lg text-base sm:text-sm font-semibold shadow-lg backdrop-blur-sm border border-red-400/50 min-w-[60px] sm:min-w-0"
+            className="bg-red-600/80 hover:bg-red-600 text-white px-4 py-3 sm:px-3 sm:py-2 rounded-lg text-base sm:text-sm font-semibold shadow-lg backdrop-blur-sm border border-red-400/50 min-w-[60px] sm:min-w-0 opacity-0 sm:opacity-0 sm:hover:opacity-100 transition-opacity duration-300"
             title="スクリーンショットモードを終了"
+            id="screenshot-back-button"
           >
             戻る
           </button>
         </div>
+      )}
+
+      {/* スマホ用の透明オーバーレイ - タップで戻るボタンを表示 */}
+      {screenshotMode && (
+        <div 
+          className="absolute inset-0 z-40 sm:hidden"
+          onClick={() => {
+            const backButton = document.getElementById('screenshot-back-button')
+            if (backButton) {
+              backButton.classList.toggle('opacity-0')
+              backButton.classList.toggle('opacity-100')
+            }
+          }}
+        />
       )}
 
       {/* 音楽ビジュアライザー */}
