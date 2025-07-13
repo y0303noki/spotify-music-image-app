@@ -38,6 +38,12 @@ function App() {
     console.log('Current search:', window.location.search)
     console.log('Current hash:', window.location.hash)
     
+    // 環境変数の確認
+    console.log('Environment variables:')
+    console.log('VITE_SPOTIFY_CLIENT_ID:', import.meta.env.VITE_SPOTIFY_CLIENT_ID ? 'set' : 'missing')
+    console.log('VITE_REACT_APP_API_URL:', import.meta.env.VITE_REACT_APP_API_URL ? 'set' : 'missing')
+    console.log('VITE_REACT_APP_REDIRECT_URI:', import.meta.env.VITE_REACT_APP_REDIRECT_URI ? 'set' : 'missing')
+    
     // クエリパラメータを直接チェック
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get('code')
