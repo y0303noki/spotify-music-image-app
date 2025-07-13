@@ -182,8 +182,65 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
         </div>
       </div>
 
+      {/* 中央エリアの背景画像（カードエリアの下のスペースを埋める） */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+        {tracks.slice(3, 6).map((track: Track, index: number) => {
+          const angle = (index * 120) * (Math.PI / 180) // 120度ずつ配置
+          const distance = window.innerWidth < 768 ? 80 : 120
+          const x = Math.cos(angle) * distance
+          const y = Math.sin(angle) * distance
+          const size = window.innerWidth < 768 ? 60 : 80
+
+          return (
+            <div
+              key={`center-${track.id}`}
+              className="absolute transition-all duration-700 ease-out hover:scale-125 hover:z-20"
+              style={{
+                left: `${x}px`,
+                top: `${y}px`,
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <div className="relative group">
+                {/* ホバー時のグロー効果 */}
+                <div className="absolute inset-0 bg-spotify-green rounded-lg blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+                
+                <img
+                  src={track.imageUrl}
+                  alt={track.name}
+                  className="relative rounded-lg shadow-lg opacity-80 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-spotify-green/50 cursor-pointer"
+                  style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    objectFit: 'cover',
+                  }}
+                  onClick={() => handleClick(track)}
+                  title={`${track.name} - ${track.artist}`}
+                  draggable={false}
+                />
+                
+                {/* ホバー時の情報表示 */}
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 rounded-lg flex items-center justify-center">
+                  <div className="text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2">
+                    <p className="text-xs font-semibold truncate max-w-20 mb-1">
+                      {track.name}
+                    </p>
+                    <p className="text-xs truncate max-w-20 mb-1">
+                      {track.artist}
+                    </p>
+                    <p className="text-spotify-green text-xs font-bold">
+                      {mode === 'recent' ? `♪ ${track.playCount}回` : `♥ ${track.playCount}曲`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
       {/* 4位以降の曲/アルバムを無作為に配置 - レスポンシブ対応 */}
-      {tracks.slice(3).map((track: Track, index: number) => {
+      {tracks.slice(6).map((track: Track, index: number) => {
         const position = positions[index]
         if (!position) return null
 
