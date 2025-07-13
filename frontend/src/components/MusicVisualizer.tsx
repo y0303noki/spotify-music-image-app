@@ -59,111 +59,128 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-spotify-black">
-      {/* メインの曲/アルバム（中央に大きく表示） - レスポンシブ対応 */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
-        <div className="relative group">
-          {/* グロー効果 */}
-          <div className="absolute inset-0 bg-spotify-green rounded-full blur-3xl opacity-20 animate-pulse" />
-          
-          <img
-            src={mainTrack.imageUrl}
-            alt={mainTrack.name}
-            className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-cover rounded-2xl shadow-2xl border-4 border-spotify-green/30 hover:border-spotify-green/60 transition-all duration-500 hover:scale-105 cursor-pointer"
-            onClick={() => handleClick(mainTrack)}
-            title={`${mainTrack.name} - ${mainTrack.artist}`}
-            draggable={false}
-          />
-          
-          {/* 情報オーバーレイ - レスポンシブ対応 */}
-          <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 transform -translate-x-1/2 text-center">
-            <h3 className="text-white text-lg sm:text-xl font-bold truncate max-w-48 sm:max-w-64 md:max-w-80 mb-1 sm:mb-2">
-              {mainTrack.name}
-            </h3>
-            <p className="text-gray-300 text-sm sm:text-base truncate max-w-48 sm:max-w-64 md:max-w-80 mb-1">
-              {mainTrack.artist}
-            </p>
-            <div className="inline-flex items-center bg-spotify-green/20 px-3 sm:px-4 py-1 sm:py-2 rounded-full">
-              <span className="text-spotify-green text-sm sm:text-lg font-bold">
-                {mode === 'recent' ? `♪ ${mainTrack.playCount}回` : `♥ ${mainTrack.playCount}曲`}
-              </span>
+      {/* 上位3曲のカードエリア */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-6xl px-4">
+        <div className="flex justify-center items-center space-x-2 sm:space-x-4 md:space-x-6">
+          {/* 3位のカード */}
+          {thirdTrack && (
+            <div className="flex-1 max-w-32 sm:max-w-40 md:max-w-48">
+              <div className="relative group cursor-pointer" onClick={() => handleClick(thirdTrack)}>
+                {/* カード背景 */}
+                <div className="bg-spotify-gray/80 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-spotify-green/20 hover:border-spotify-green/40 transition-all duration-300">
+                  {/* 順位表示 */}
+                  <div className="absolute -top-2 -left-2 w-6 h-6 bg-spotify-green rounded-full flex items-center justify-center z-10">
+                    <span className="text-white text-xs font-bold">3</span>
+                  </div>
+                  
+                  {/* 画像 */}
+                  <img
+                    src={thirdTrack.imageUrl}
+                    alt={thirdTrack.name}
+                    className="w-full aspect-square object-cover rounded-lg shadow-lg"
+                    title={`${thirdTrack.name} - ${thirdTrack.artist}`}
+                    draggable={false}
+                  />
+                  
+                  {/* 情報 */}
+                  <div className="mt-2 text-center">
+                    <p className="text-white text-xs sm:text-sm font-semibold truncate mb-1">
+                      {thirdTrack.name}
+                    </p>
+                    <p className="text-gray-300 text-xs truncate mb-1">
+                      {thirdTrack.artist}
+                    </p>
+                    <div className="inline-flex items-center bg-spotify-green/20 px-2 py-1 rounded-full">
+                      <span className="text-spotify-green text-xs font-bold">
+                        {mode === 'recent' ? `♪ ${thirdTrack.playCount}回` : `♥ ${thirdTrack.playCount}曲`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 1位のカード（中央、大きく） */}
+          <div className="flex-1 max-w-40 sm:max-w-48 md:max-w-56">
+            <div className="relative group cursor-pointer" onClick={() => handleClick(mainTrack)}>
+              {/* カード背景 */}
+              <div className="bg-spotify-gray/90 backdrop-blur-sm rounded-xl p-3 sm:p-4 border-2 border-spotify-green/30 hover:border-spotify-green/60 transition-all duration-300">
+                {/* 順位表示 */}
+                <div className="absolute -top-3 -left-3 w-8 h-8 bg-spotify-green rounded-full flex items-center justify-center z-10">
+                  <span className="text-white text-sm font-bold">1</span>
+                </div>
+                
+                {/* グロー効果 */}
+                <div className="absolute inset-0 bg-spotify-green rounded-xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                
+                {/* 画像 */}
+                <img
+                  src={mainTrack.imageUrl}
+                  alt={mainTrack.name}
+                  className="relative w-full aspect-square object-cover rounded-lg shadow-xl"
+                  title={`${mainTrack.name} - ${mainTrack.artist}`}
+                  draggable={false}
+                />
+                
+                {/* 情報 */}
+                <div className="mt-3 text-center">
+                  <p className="text-white text-sm sm:text-base font-bold truncate mb-1">
+                    {mainTrack.name}
+                  </p>
+                  <p className="text-gray-300 text-xs sm:text-sm truncate mb-2">
+                    {mainTrack.artist}
+                  </p>
+                  <div className="inline-flex items-center bg-spotify-green/30 px-3 py-1 rounded-full">
+                    <span className="text-spotify-green text-sm font-bold">
+                      {mode === 'recent' ? `♪ ${mainTrack.playCount}回` : `♥ ${mainTrack.playCount}曲`}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* 2位のカード */}
+          {secondTrack && (
+            <div className="flex-1 max-w-32 sm:max-w-40 md:max-w-48">
+              <div className="relative group cursor-pointer" onClick={() => handleClick(secondTrack)}>
+                {/* カード背景 */}
+                <div className="bg-spotify-gray/80 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-spotify-green/20 hover:border-spotify-green/40 transition-all duration-300">
+                  {/* 順位表示 */}
+                  <div className="absolute -top-2 -left-2 w-6 h-6 bg-spotify-green rounded-full flex items-center justify-center z-10">
+                    <span className="text-white text-xs font-bold">2</span>
+                  </div>
+                  
+                  {/* 画像 */}
+                  <img
+                    src={secondTrack.imageUrl}
+                    alt={secondTrack.name}
+                    className="w-full aspect-square object-cover rounded-lg shadow-lg"
+                    title={`${secondTrack.name} - ${secondTrack.artist}`}
+                    draggable={false}
+                  />
+                  
+                  {/* 情報 */}
+                  <div className="mt-2 text-center">
+                    <p className="text-white text-xs sm:text-sm font-semibold truncate mb-1">
+                      {secondTrack.name}
+                    </p>
+                    <p className="text-gray-300 text-xs truncate mb-1">
+                      {secondTrack.artist}
+                    </p>
+                    <div className="inline-flex items-center bg-spotify-green/20 px-2 py-1 rounded-full">
+                      <span className="text-spotify-green text-xs font-bold">
+                        {mode === 'recent' ? `♪ ${secondTrack.playCount}回` : `♥ ${secondTrack.playCount}曲`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* 2位の曲/アルバム（右上に配置） - 半透明オーバーレイ付き */}
-      {secondTrack && (
-        <div className="absolute top-1/4 right-1/4 z-25 transition-all duration-700 ease-out hover:scale-110 hover:z-30">
-          <div className="relative group">
-            {/* 半透明オーバーレイ背景 - 背景画像との重なりを防ぐ */}
-            <div className="absolute inset-0 bg-spotify-black/40 rounded-xl backdrop-blur-sm" />
-            
-            {/* ホバー時のグロー効果 */}
-            <div className="absolute inset-0 bg-spotify-green rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-            
-            <img
-              src={secondTrack.imageUrl}
-              alt={secondTrack.name}
-              className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 object-cover rounded-xl shadow-xl opacity-95 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-spotify-green/50 cursor-pointer"
-              onClick={() => handleClick(secondTrack)}
-              title={`${secondTrack.name} - ${secondTrack.artist}`}
-              draggable={false}
-            />
-            
-            {/* 情報表示 */}
-            <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 text-center">
-              <p className="text-white text-sm sm:text-base font-semibold truncate max-w-36 sm:max-w-44 md:max-w-52 mb-1">
-                {secondTrack.name}
-              </p>
-              <p className="text-gray-300 text-xs sm:text-sm truncate max-w-36 sm:max-w-44 md:max-w-52 mb-1">
-                {secondTrack.artist}
-              </p>
-              <div className="inline-flex items-center bg-spotify-green/20 px-2 sm:px-3 py-1 rounded-full">
-                <span className="text-spotify-green text-xs sm:text-sm font-bold">
-                  {mode === 'recent' ? `♪ ${secondTrack.playCount}回` : `♥ ${secondTrack.playCount}曲`}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 3位の曲/アルバム（左上に配置） - 半透明オーバーレイ付き */}
-      {thirdTrack && (
-        <div className="absolute top-1/4 left-1/4 z-25 transition-all duration-700 ease-out hover:scale-110 hover:z-30">
-          <div className="relative group">
-            {/* 半透明オーバーレイ背景 - 背景画像との重なりを防ぐ */}
-            <div className="absolute inset-0 bg-spotify-black/40 rounded-xl backdrop-blur-sm" />
-            
-            {/* ホバー時のグロー効果 */}
-            <div className="absolute inset-0 bg-spotify-green rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-            
-            <img
-              src={thirdTrack.imageUrl}
-              alt={thirdTrack.name}
-              className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 object-cover rounded-xl shadow-xl opacity-95 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-spotify-green/50 cursor-pointer"
-              onClick={() => handleClick(thirdTrack)}
-              title={`${thirdTrack.name} - ${thirdTrack.artist}`}
-              draggable={false}
-            />
-            
-            {/* 情報表示 */}
-            <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 text-center">
-              <p className="text-white text-sm sm:text-base font-semibold truncate max-w-36 sm:max-w-44 md:max-w-52 mb-1">
-                {thirdTrack.name}
-              </p>
-              <p className="text-gray-300 text-xs sm:text-sm truncate max-w-36 sm:max-w-44 md:max-w-52 mb-1">
-                {thirdTrack.artist}
-              </p>
-              <div className="inline-flex items-center bg-spotify-green/20 px-2 sm:px-3 py-1 rounded-full">
-                <span className="text-spotify-green text-xs sm:text-sm font-bold">
-                  {mode === 'recent' ? `♪ ${thirdTrack.playCount}回` : `♥ ${thirdTrack.playCount}曲`}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 4位以降の曲/アルバムを無作為に配置 - レスポンシブ対応 */}
       {tracks.slice(3).map((track: Track, index: number) => {
