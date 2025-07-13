@@ -84,29 +84,29 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-spotify-black">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-spotify-black px-4">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+          <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-white">
             Spotify Music Image App
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          <p className="mt-2 text-center text-sm sm:text-base text-gray-400">
             最近聴いた曲のジャケット写真を見てみましょう
           </p>
           <p className="mt-2 text-center text-xs text-gray-500">
             デバッグ: このページが表示されていれば、基本的なレンダリングは正常です
           </p>
         </div>
-        <div className="mt-8 space-y-6">
+        <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
           <button
             onClick={handleSpotifyLogin}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-spotify-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spotify-green"
+            className="group relative w-full flex justify-center py-3 sm:py-4 px-4 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-spotify-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spotify-green transition-colors"
           >
             Spotifyでログイン
           </button>
           <button
             onClick={handleTestClick}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            className="group relative w-full flex justify-center py-3 sm:py-4 px-4 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
           >
             テストボタン（JavaScript動作確認）
           </button>

@@ -12,4 +12,35 @@
 
 .App-link {
   color: #1DB954;
+}
+
+/* レスポンシブデザイン用のスタイル */
+@media (max-width: 768px) {
+  .App-header {
+    padding: 15px;
+  }
+  
+  /* モバイルでのタッチ操作を最適化 */
+  button {
+    min-height: 44px; /* iOS推奨のタッチターゲットサイズ */
+  }
+  
+  /* モバイルでのスクロールを滑らかに */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* タブレット用のスタイル */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .App-header {
+    padding: 18px;
+  }
+}
+
+/* デスクトップ用のスタイル */
+@media (min-width: 1025px) {
+  .App-header {
+    padding: 20px;
+  }
 } 

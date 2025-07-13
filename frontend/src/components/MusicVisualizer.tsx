@@ -27,13 +27,14 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
     const newPositions = otherTracks.map((track: Track) => {
       // ランダムな位置を生成（中央を避ける）
       const angle = Math.random() * 2 * Math.PI
-      const distance = 200 + Math.random() * 400 // 中央から200-600pxの距離
+      // モバイル対応: 距離を調整
+      const distance = window.innerWidth < 768 ? 100 + Math.random() * 200 : 200 + Math.random() * 400
       const x = Math.cos(angle) * distance
       const y = Math.sin(angle) * distance
       
-      // サイズを聴取回数に基づいて計算
-      const baseSize = 80 + (track.playCount * 10)
-      const maxSize = 200
+      // サイズを聴取回数に基づいて計算（モバイル対応）
+      const baseSize = window.innerWidth < 768 ? 40 + (track.playCount * 5) : 80 + (track.playCount * 10)
+      const maxSize = window.innerWidth < 768 ? 100 : 200
       const size = Math.min(baseSize, maxSize)
       
       return { x, y, size }
@@ -56,7 +57,7 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-spotify-black">
-      {/* メインの曲/アルバム（中央に大きく表示） */}
+      {/* メインの曲/アルバム（中央に大きく表示） - レスポンシブ対応 */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
         <div className="relative group">
           {/* グロー効果 */}
@@ -65,22 +66,22 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
           <img
             src={mainTrack.imageUrl}
             alt={mainTrack.name}
-            className="relative w-80 h-80 object-cover rounded-2xl shadow-2xl border-4 border-spotify-green/30 hover:border-spotify-green/60 transition-all duration-500 hover:scale-105 cursor-pointer"
+            className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-cover rounded-2xl shadow-2xl border-4 border-spotify-green/30 hover:border-spotify-green/60 transition-all duration-500 hover:scale-105 cursor-pointer"
             onClick={() => handleClick(mainTrack)}
             title={`${mainTrack.name} - ${mainTrack.artist}`}
             draggable={false}
           />
           
-          {/* 情報オーバーレイ */}
-          <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 text-center">
-            <h3 className="text-white text-xl font-bold truncate max-w-80 mb-2">
+          {/* 情報オーバーレイ - レスポンシブ対応 */}
+          <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 transform -translate-x-1/2 text-center">
+            <h3 className="text-white text-lg sm:text-xl font-bold truncate max-w-48 sm:max-w-64 md:max-w-80 mb-1 sm:mb-2">
               {mainTrack.name}
             </h3>
-            <p className="text-gray-300 text-base truncate max-w-80 mb-1">
+            <p className="text-gray-300 text-sm sm:text-base truncate max-w-48 sm:max-w-64 md:max-w-80 mb-1">
               {mainTrack.artist}
             </p>
-            <div className="inline-flex items-center bg-spotify-green/20 px-4 py-2 rounded-full">
-              <span className="text-spotify-green text-lg font-bold">
+            <div className="inline-flex items-center bg-spotify-green/20 px-3 sm:px-4 py-1 sm:py-2 rounded-full">
+              <span className="text-spotify-green text-sm sm:text-lg font-bold">
                 {mode === 'recent' ? `♪ ${mainTrack.playCount}回` : `♥ ${mainTrack.playCount}曲`}
               </span>
             </div>
@@ -88,7 +89,7 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
         </div>
       </div>
 
-      {/* その他の曲/アルバムを無作為に配置 */}
+      {/* その他の曲/アルバムを無作為に配置 - レスポンシブ対応 */}
       {tracks.slice(1).map((track: Track, index: number) => {
         const position = positions[index]
         if (!position) return null
@@ -121,13 +122,13 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
                 draggable={false}
               />
               
-              {/* ホバー時の情報表示 */}
+              {/* ホバー時の情報表示 - レスポンシブ対応 */}
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 rounded-lg flex items-center justify-center">
-                <div className="text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2">
-                  <p className="text-xs font-semibold truncate max-w-32 mb-1">
+                <div className="text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-1 sm:p-2">
+                  <p className="text-xs font-semibold truncate max-w-24 sm:max-w-32 mb-1">
                     {track.name}
                   </p>
-                  <p className="text-xs truncate max-w-32 mb-1">
+                  <p className="text-xs truncate max-w-24 sm:max-w-32 mb-1">
                     {track.artist}
                   </p>
                   <p className="text-spotify-green text-xs font-bold">
@@ -140,16 +141,16 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
         )
       })}
 
-      {/* 背景を埋めるための追加画像（画面の隙間を埋める） */}
-      {Array.from({ length: Math.max(0, 20 - tracks.length) }).map((_, index: number) => {
+      {/* 背景を埋めるための追加画像（画面の隙間を埋める） - レスポンシブ対応 */}
+      {Array.from({ length: Math.max(0, (window.innerWidth < 768 ? 10 : 20) - tracks.length) }).map((_, index: number) => {
         const randomTrack = tracks[Math.floor(Math.random() * tracks.length)]
         if (!randomTrack) return null
 
         const angle = Math.random() * 2 * Math.PI
-        const distance = 300 + Math.random() * 500
+        const distance = window.innerWidth < 768 ? 150 + Math.random() * 250 : 300 + Math.random() * 500
         const x = Math.cos(angle) * distance
         const y = Math.sin(angle) * distance
-        const size = 40 + Math.random() * 60
+        const size = window.innerWidth < 768 ? 20 + Math.random() * 30 : 40 + Math.random() * 60
 
         return (
           <div
