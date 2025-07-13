@@ -29,29 +29,12 @@ const REDIRECT_URI = (process.env.REDIRECT_URI || 'https://y0303noki.github.io/s
 app.post('/auth/callback', async (req, res) => {
   try {
     const { code } = req.body
-    console.log('Received callback request with code:', code ? 'present' : 'missing')
 
     if (!code) {
-      console.error('No authorization code provided')
       return res.status(400).json({ error: 'Authorization code is required' })
     }
 
-    console.log('Exchanging code for token...')
-    console.log('Client ID:', SPOTIFY_CLIENT_ID ? 'set' : 'missing')
-    console.log('Client Secret:', SPOTIFY_CLIENT_SECRET ? 'set' : 'missing')
-    console.log('Redirect URI:', REDIRECT_URI)
-    console.log('Environment REDIRECT_URI:', process.env.REDIRECT_URI)
-    console.log('Environment REDIRECT_URI length:', process.env.REDIRECT_URI ? process.env.REDIRECT_URI.length : 0)
-    console.log('Environment REDIRECT_URI char codes:', process.env.REDIRECT_URI ? Array.from(process.env.REDIRECT_URI).map(c => c.charCodeAt(0)) : [])
-    console.log('Code length:', code ? code.length : 0)
-
     // Exchange code for access token
-    console.log('Sending token exchange request with:');
-    console.log('- grant_type: authorization_code');
-    console.log('- code:', code.substring(0, 20) + '...');
-    console.log('- redirect_uri:', REDIRECT_URI);
-    console.log('- redirect_uri length:', REDIRECT_URI.length);
-    
     const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', 
       querystring.stringify({
         grant_type: 'authorization_code',
@@ -64,7 +47,6 @@ app.post('/auth/callback', async (req, res) => {
       }
     })
 
-    console.log('Token exchange successful')
     const { access_token, refresh_token } = tokenResponse.data
 
     res.json({
@@ -73,8 +55,6 @@ app.post('/auth/callback', async (req, res) => {
       token_type: 'Bearer'
     })
   } catch (error) {
-    console.error('Token exchange error:', error.response?.data || error.message)
-    
     // invalid_grantエラーの場合は400エラーを返す
     if (error.response?.data?.error === 'invalid_grant') {
       res.status(400).json({ 
@@ -176,7 +156,6 @@ app.get('/tracks/recent', async (req, res) => {
 
     res.json({ tracks, totalFetched: allRecentTracks.length, requestedLimit: limit })
   } catch (error) {
-    console.error('Error fetching recent tracks:', error.response?.data || error.message)
     res.status(500).json({ error: 'Failed to fetch recent tracks' })
   }
 })
@@ -273,8 +252,6 @@ app.get('/tracks/liked', async (req, res) => {
 
     res.json({ tracks: albums, totalFetched: allLikedTracks.length, requestedLimit: limit })
   } catch (error) {
-    console.error('Error fetching liked tracks:', error.response?.data || error.message)
-    
     // スコープ不足の場合は特別なエラーメッセージを返す
     if (error.response?.data?.error?.status === 403) {
       res.status(403).json({ 

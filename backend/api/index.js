@@ -47,7 +47,6 @@ app.post('/api/auth/callback', async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error('Token exchange error:', error.response?.data || error.message);
     res.status(500).json({ error: 'Token exchange failed' });
   }
 });
@@ -86,7 +85,6 @@ app.get('/api/recently-played', async (req, res) => {
     
     res.json({ albums });
   } catch (error) {
-    console.error('Recently played error:', error.response?.data || error.message);
     if (error.response?.status === 401) {
       res.status(401).json({ error: 'Token expired', needsReauth: true });
     } else {
@@ -129,7 +127,6 @@ app.get('/api/liked-tracks', async (req, res) => {
     
     res.json({ albums });
   } catch (error) {
-    console.error('Liked tracks error:', error.response?.data || error.message);
     if (error.response?.status === 401) {
       res.status(401).json({ error: 'Token expired', needsReauth: true });
     } else {

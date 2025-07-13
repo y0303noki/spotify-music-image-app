@@ -26,24 +26,17 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('spotify_access_token')
-    console.log('Dashboard: Token check:', token ? 'present' : 'missing')
     
     if (!token) {
-      console.log('Dashboard: No token found, redirecting to login')
       navigate('/')
       return
     }
 
     const fetchTracks = async () => {
       try {
-        console.log(`Dashboard: Fetching ${mode} tracks with limit ${trackLimit}...`)
-        
         const response = mode === 'recent' 
           ? await api.getRecentlyPlayed(token, trackLimit)
           : await api.getLikedTracks(token, trackLimit)
-        
-        console.log('Dashboard: Albums received:', response.albums?.length || 0)
-        console.log('Dashboard: Total fetched:', response.totalFetched || 0)
         
         // アルバムデータをTrack形式に変換
         const tracksFromAlbums: Track[] = response.albums.map((album: any) => ({
@@ -60,7 +53,6 @@ const Dashboard: React.FC = () => {
         setTracks(tracksFromAlbums)
         setTotalFetched(response.totalFetched || 0)
       } catch (error) {
-        console.error('Dashboard: API error:', error)
         if (error instanceof Error && error.message === 'Token expired') {
           setError('トークンが期限切れです。再度ログインしてください')
           localStorage.removeItem('spotify_access_token')

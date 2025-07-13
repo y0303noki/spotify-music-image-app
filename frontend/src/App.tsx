@@ -11,18 +11,10 @@ const RootCallback: React.FC = () => {
   const location = useLocation()
 
   useEffect(() => {
-    console.log('RootCallback component mounted')
-    console.log('Location pathname:', location.pathname)
-    console.log('Location search:', location.search)
-    console.log('Location hash:', location.hash)
-    
     const urlParams = new URLSearchParams(location.search)
     const code = urlParams.get('code')
     
-    console.log('Code in RootCallback:', code ? 'present' : 'missing')
-    
     if (code) {
-      console.log('Code found in root path, redirecting to callback')
       // クエリパラメータを保持したまま/callbackにリダイレクト
       navigate(`/callback${location.search}`)
     }
@@ -32,24 +24,6 @@ const RootCallback: React.FC = () => {
 }
 
 function App() {
-  useEffect(() => {
-    console.log('App component mounted')
-    console.log('Current pathname:', window.location.pathname)
-    console.log('Current search:', window.location.search)
-    console.log('Current hash:', window.location.hash)
-    
-    // 環境変数の確認
-    console.log('Environment variables:')
-    console.log('VITE_SPOTIFY_CLIENT_ID:', import.meta.env.VITE_SPOTIFY_CLIENT_ID ? 'set' : 'missing')
-    console.log('VITE_REACT_APP_API_URL:', import.meta.env.VITE_REACT_APP_API_URL ? 'set' : 'missing')
-    console.log('VITE_REACT_APP_REDIRECT_URI:', import.meta.env.VITE_REACT_APP_REDIRECT_URI ? 'set' : 'missing')
-    
-    // クエリパラメータを直接チェック
-    const urlParams = new URLSearchParams(window.location.search)
-    const code = urlParams.get('code')
-    console.log('Code in App:', code ? 'present' : 'missing')
-  }, [])
-
   // ローカル環境かどうかを判定
   const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
   const basename = isLocalhost ? '' : '/spotify-music-image-app'

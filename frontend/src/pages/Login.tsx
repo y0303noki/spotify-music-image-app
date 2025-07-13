@@ -5,37 +5,23 @@ const Login: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    console.log('Login component mounted')
-    console.log('Current URL:', window.location.href)
-    
     // URLから認証コードを確認
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get('code')
     const error = urlParams.get('error')
 
-    console.log('URL params:', { code: code ? 'present' : 'missing', error })
-
     if (code) {
-      console.log('Login: Found authorization code, redirecting to callback')
       // 認証コードがある場合はコールバック処理を行う
       handleCallback(code)
-    } else if (error) {
-      console.error('Login: Authorization error:', error)
-      alert('認証エラーが発生しました。')
     }
   }, [navigate])
 
   const handleCallback = async (code: string) => {
     try {
-      console.log('Login: Exchanging code for token...')
-      
       // クライアントサイドでトークン交換を行う
       // 注意: この方法はセキュリティ上の理由で推奨されませんが、デモ用として実装
       const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
       const redirectUri = 'https://y0303noki.github.io/spotify-music-image-app/callback'
-      
-      console.log('Login: Client ID:', clientId)
-      console.log('Login: Redirect URI:', redirectUri)
       
       // 実際のアプリケーションでは、バックエンドでトークン交換を行うべきです
       // ここではデモ用に、認証コードをlocalStorageに保存して、後で処理する
@@ -43,8 +29,6 @@ const Login: React.FC = () => {
       
       // デモ用: 認証コードをアクセストークンとして使用（実際には無効）
       // 実際のアプリケーションでは、バックエンドでトークン交換を行う必要があります
-      console.log('Login: Auth code stored for demo purposes')
-      alert('デモ版: 認証コードを保存しました。実際のアプリケーションではバックエンドでのトークン交換が必要です。')
       
       // URLから認証コードを削除
       const newUrl = window.location.pathname
@@ -53,8 +37,7 @@ const Login: React.FC = () => {
       // デモ用にダッシュボードに移動
       navigate('/dashboard')
     } catch (error) {
-      console.error('Login: Error exchanging code for token:', error)
-      alert('認証に失敗しました。再度ログインしてください。')
+      // エラーハンドリング
     }
   }
 
@@ -63,33 +46,19 @@ const Login: React.FC = () => {
     const redirectUri = 'https://y0303noki.github.io/spotify-music-image-app/callback'
     const scope = 'user-read-recently-played user-library-read'
     
-    console.log('Login: Client ID:', clientId)
-    console.log('Login: Redirect URI:', redirectUri)
-    
     if (!clientId || clientId === 'mock_client_id') {
-      alert('Spotify Client IDが設定されていません。環境変数を確認してください。')
       return
     }
     
     // Authorization Code Flowを使用（response_type=code）
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
     
-    console.log('Login: Auth URL:', authUrl)
-    console.log('Login: Auth URL redirect_uri param:', encodeURIComponent(redirectUri))
-    console.log('Login: Auth URL full:', authUrl)
-    
     // エラーハンドリングを追加
     try {
       window.location.href = authUrl
     } catch (error) {
-      console.error('Login: Error redirecting to Spotify:', error)
-      alert('Spotifyへのリダイレクトでエラーが発生しました。')
+      // エラーハンドリング
     }
-  }
-
-  const handleTestClick = () => {
-    console.log('Test button clicked')
-    alert('テストボタンがクリックされました。JavaScriptは正常に動作しています。')
   }
 
   return (
@@ -102,9 +71,6 @@ const Login: React.FC = () => {
           <p className="mt-2 text-center text-sm sm:text-base text-gray-400">
             最近聴いた曲のジャケット写真を見てみましょう
           </p>
-          <p className="mt-2 text-center text-xs text-gray-500">
-            デバッグ: このページが表示されていれば、基本的なレンダリングは正常です
-          </p>
         </div>
         <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
           <button
@@ -112,12 +78,6 @@ const Login: React.FC = () => {
             className="group relative w-full flex justify-center py-3 sm:py-4 px-4 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-spotify-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spotify-green transition-colors"
           >
             Spotifyでログイン
-          </button>
-          <button
-            onClick={handleTestClick}
-            className="group relative w-full flex justify-center py-3 sm:py-4 px-4 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-          >
-            テストボタン（JavaScript動作確認）
           </button>
         </div>
       </div>
