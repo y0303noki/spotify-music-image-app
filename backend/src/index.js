@@ -72,12 +72,17 @@ app.post('/auth/callback', async (req, res) => {
 
 app.get('/tracks/recent', async (req, res) => {
   try {
+    console.log('Received request to /tracks/recent');
+    console.log('Headers:', req.headers);
+    
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('Missing or invalid authorization header');
       return res.status(401).json({ error: 'Access token required' })
     }
 
     const accessToken = authHeader.split(' ')[1]
+    console.log('Access token length:', accessToken.length);
     
     // クエリパラメータから取得数を取得（デフォルト200）
     const limit = parseInt(req.query.limit) || 200
@@ -94,8 +99,10 @@ app.get('/tracks/recent', async (req, res) => {
     
     // 必要なページ数を計算
     const totalPages = Math.ceil(limit / pageSize)
+    console.log(`Fetching ${totalPages} pages of recent tracks`);
     
     for (let i = 0; i < totalPages; i++) {
+      console.log(`Fetching page ${i + 1}/${totalPages}`);
       const tracksResponse = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?limit=${pageSize}&after=${offset}`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
@@ -103,6 +110,7 @@ app.get('/tracks/recent', async (req, res) => {
       })
       
       const tracks = tracksResponse.data.items
+      console.log(`Received ${tracks.length} tracks from Spotify API`);
       if (tracks.length === 0) break
       
       allRecentTracks = allRecentTracks.concat(tracks)
@@ -156,7 +164,19 @@ app.get('/tracks/recent', async (req, res) => {
 
     res.json({ tracks, totalFetched: allRecentTracks.length, requestedLimit: limit })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch recent tracks' })
+    console.error('Error in /tracks/recent:', error);
+    console.error('Error details:', error.response?.data || error.message);
+    
+    if (error.response?.status === 401) {
+      res.status(401).json({ error: 'Token expired', needsReauth: true });
+    } else if (error.response?.status === 403) {
+      res.status(403).json({ error: 'Insufficient permissions' });
+    } else {
+      res.status(500).json({ 
+        error: 'Failed to fetch recent tracks',
+        details: error.response?.data || error.message
+      });
+    }
   }
 })
 
@@ -252,12 +272,17 @@ app.get('/tracks/liked', async (req, res) => {
 
     res.json({ tracks: albums, totalFetched: allLikedTracks.length, requestedLimit: limit })
   } catch (error) {
+    console.error('Error in /tracks/liked:', error);
+    console.error('Error details:', error.response?.data || error.message);
+    
     // スコープ不足の場合は特別なエラーメッセージを返す
     if (error.response?.data?.error?.status === 403) {
       res.status(403).json({ 
         error: 'Insufficient permissions',
         details: 'user-library-read scope is required to access liked tracks'
       })
+    } else if (error.response?.status === 401) {
+      res.status(401).json({ error: 'Token expired', needsReauth: true });
     } else {
       res.status(500).json({ 
         error: 'Failed to fetch liked tracks',
@@ -273,7 +298,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     clientId: SPOTIFY_CLIENT_ID ? 'set' : 'missing',
     clientSecret: SPOTIFY_CLIENT_SECRET ? 'set' : 'missing',
-    redirectUri: REDIRECT_URI
+    redirectUri: REDIRECT_URI,
+    nodeEnv: process.env.NODE_ENV,
+    port: process.env.PORT
   })
 })
 
