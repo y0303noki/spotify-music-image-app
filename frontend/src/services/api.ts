@@ -2,8 +2,11 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
 const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback';
 
-// ローカルバックエンドを使用（開発・本番環境共通）
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// 環境に応じてAPI URLを設定
+const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+const API_BASE_URL = isLocalhost 
+  ? 'http://127.0.0.1:8000' 
+  : (import.meta.env.VITE_REACT_APP_API_URL || 'https://your-backend-url.vercel.app');
 
 export const api = {
   // Spotify認証URLを取得

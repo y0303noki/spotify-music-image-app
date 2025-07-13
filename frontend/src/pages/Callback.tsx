@@ -52,8 +52,11 @@ const Callback: React.FC = () => {
     try {
       console.log('Exchanging code for token via backend...')
       
-      // ローカルバックエンドを使用（開発・本番環境共通）
-      const apiUrl = 'http://127.0.0.1:8000';
+      // 環境に応じてAPI URLを設定
+      const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+      const apiUrl = isLocalhost 
+        ? 'http://127.0.0.1:8000' 
+        : (import.meta.env.VITE_REACT_APP_API_URL || 'https://your-backend-url.vercel.app');
       console.log('API URL:', apiUrl)
       
       const response = await fetch(`${apiUrl}/auth/callback`, {
