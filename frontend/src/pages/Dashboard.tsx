@@ -23,6 +23,7 @@ const Dashboard: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false)
   const [totalFetched, setTotalFetched] = useState<number>(0)
   const [screenshotMode, setScreenshotMode] = useState(false)
+  const [showScreenshotInfo, setShowScreenshotInfo] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -80,7 +81,16 @@ const Dashboard: React.FC = () => {
   }
 
   const handleScreenshotMode = () => {
-    setScreenshotMode(!screenshotMode)
+    if (!screenshotMode) {
+      // スクリーンショットモードに入る前に情報を表示
+      setShowScreenshotInfo(true)
+      setTimeout(() => {
+        setShowScreenshotInfo(false)
+        setScreenshotMode(true)
+      }, 3000) // 3秒後にスクリーンショットモードに移行
+    } else {
+      setScreenshotMode(false)
+    }
   }
 
   if (loading) {
@@ -206,20 +216,34 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* スクリーンショットモード時の専用ボタン */}
-      {screenshotMode && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
-              スクリーンショットモード - UI要素を非表示中
+      {/* スクリーンショット情報表示 */}
+      {showScreenshotInfo && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-spotify-black/90 backdrop-blur-sm border border-spotify-green/50 rounded-xl p-6 text-center max-w-md mx-4">
+            <h3 className="text-white text-lg font-bold mb-3">スクリーンショットモード</h3>
+            <p className="text-gray-300 text-sm mb-4">
+              UI要素を非表示にしてクリーンな画像を撮影できます。
+            </p>
+            <p className="text-spotify-green text-sm font-semibold mb-4">
+              📸 撮影後は画面右上の透明ボタンをホバーして「戻る」をクリックしてください
+            </p>
+            <div className="text-gray-400 text-xs">
+              3秒後に自動でスクリーンショットモードに移行します...
             </div>
-            <button
-              onClick={handleScreenshotMode}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-colors shadow-lg"
-            >
-              撮影完了
-            </button>
           </div>
+        </div>
+      )}
+
+      {/* スクリーンショットモード時の小さな透明ボタン */}
+      {screenshotMode && (
+        <div className="absolute top-2 right-2 z-50 opacity-0 hover:opacity-100 transition-opacity duration-300 group">
+          <button
+            onClick={() => setScreenshotMode(false)}
+            className="bg-red-600/80 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-lg backdrop-blur-sm border border-red-400/50"
+            title="スクリーンショットモードを終了"
+          >
+            戻る
+          </button>
         </div>
       )}
 
