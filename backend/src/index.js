@@ -40,6 +40,8 @@ app.post('/auth/callback', async (req, res) => {
     console.log('Client ID:', SPOTIFY_CLIENT_ID ? 'set' : 'missing')
     console.log('Client Secret:', SPOTIFY_CLIENT_SECRET ? 'set' : 'missing')
     console.log('Redirect URI:', REDIRECT_URI)
+    console.log('Environment REDIRECT_URI:', process.env.REDIRECT_URI)
+    console.log('Code length:', code ? code.length : 0)
 
     // Exchange code for access token
     const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', 
