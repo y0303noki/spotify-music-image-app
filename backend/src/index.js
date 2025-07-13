@@ -46,6 +46,12 @@ app.post('/auth/callback', async (req, res) => {
     console.log('Code length:', code ? code.length : 0)
 
     // Exchange code for access token
+    console.log('Sending token exchange request with:');
+    console.log('- grant_type: authorization_code');
+    console.log('- code:', code.substring(0, 20) + '...');
+    console.log('- redirect_uri:', REDIRECT_URI);
+    console.log('- redirect_uri length:', REDIRECT_URI.length);
+    
     const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', 
       querystring.stringify({
         grant_type: 'authorization_code',

@@ -1,6 +1,6 @@
 // 環境変数のデフォルト値
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'mock_client_id';
-const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback';
+const REDIRECT_URI = (import.meta.env.VITE_REACT_APP_REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback').trim();
 
 // 環境に応じてAPI URLを設定
 const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
