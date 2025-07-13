@@ -41,6 +41,8 @@ app.post('/auth/callback', async (req, res) => {
     console.log('Client Secret:', SPOTIFY_CLIENT_SECRET ? 'set' : 'missing')
     console.log('Redirect URI:', REDIRECT_URI)
     console.log('Environment REDIRECT_URI:', process.env.REDIRECT_URI)
+    console.log('Environment REDIRECT_URI length:', process.env.REDIRECT_URI ? process.env.REDIRECT_URI.length : 0)
+    console.log('Environment REDIRECT_URI char codes:', process.env.REDIRECT_URI ? Array.from(process.env.REDIRECT_URI).map(c => c.charCodeAt(0)) : [])
     console.log('Code length:', code ? code.length : 0)
 
     // Exchange code for access token
