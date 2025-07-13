@@ -23,7 +23,7 @@ app.use(express.json())
 // Spotify API configuration
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://127.0.0.1:8888/callback'
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://y0303noki.github.io/spotify-music-image-app/callback'
 
 // Routes
 app.post('/auth/callback', async (req, res) => {
