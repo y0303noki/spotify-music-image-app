@@ -22,8 +22,8 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
   useEffect(() => {
     if (tracks.length === 0) return
 
-    // その他の曲/アルバムを無作為に配置
-    const otherTracks = tracks.slice(1)
+    // 4位以降の曲/アルバムを無作為に配置
+    const otherTracks = tracks.slice(3)
     const newPositions = otherTracks.map((track: Track) => {
       // ランダムな位置を生成（中央を避ける）
       const angle = Math.random() * 2 * Math.PI
@@ -54,6 +54,8 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
   if (tracks.length === 0) return null
 
   const mainTrack = tracks[0]
+  const secondTrack = tracks[1]
+  const thirdTrack = tracks[2]
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-spotify-black">
@@ -89,8 +91,76 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
         </div>
       </div>
 
-      {/* その他の曲/アルバムを無作為に配置 - レスポンシブ対応 */}
-      {tracks.slice(1).map((track: Track, index: number) => {
+      {/* 2位の曲/アルバム（右上に配置） */}
+      {secondTrack && (
+        <div className="absolute top-1/4 right-1/4 z-25 transition-all duration-700 ease-out hover:scale-110 hover:z-30">
+          <div className="relative group">
+            {/* ホバー時のグロー効果 */}
+            <div className="absolute inset-0 bg-spotify-green rounded-lg blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+            
+            <img
+              src={secondTrack.imageUrl}
+              alt={secondTrack.name}
+              className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-xl shadow-lg opacity-85 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-spotify-green/40 cursor-pointer"
+              onClick={() => handleClick(secondTrack)}
+              title={`${secondTrack.name} - ${secondTrack.artist}`}
+              draggable={false}
+            />
+            
+            {/* 情報表示 */}
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 text-center">
+              <p className="text-white text-sm sm:text-base font-semibold truncate max-w-32 sm:max-w-40 md:max-w-48 mb-1">
+                {secondTrack.name}
+              </p>
+              <p className="text-gray-300 text-xs sm:text-sm truncate max-w-32 sm:max-w-40 md:max-w-48 mb-1">
+                {secondTrack.artist}
+              </p>
+              <div className="inline-flex items-center bg-spotify-green/15 px-2 sm:px-3 py-1 rounded-full">
+                <span className="text-spotify-green text-xs sm:text-sm font-bold">
+                  {mode === 'recent' ? `♪ ${secondTrack.playCount}回` : `♥ ${secondTrack.playCount}曲`}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3位の曲/アルバム（左上に配置） */}
+      {thirdTrack && (
+        <div className="absolute top-1/4 left-1/4 z-25 transition-all duration-700 ease-out hover:scale-110 hover:z-30">
+          <div className="relative group">
+            {/* ホバー時のグロー効果 */}
+            <div className="absolute inset-0 bg-spotify-green rounded-lg blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+            
+            <img
+              src={thirdTrack.imageUrl}
+              alt={thirdTrack.name}
+              className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-xl shadow-lg opacity-85 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-spotify-green/40 cursor-pointer"
+              onClick={() => handleClick(thirdTrack)}
+              title={`${thirdTrack.name} - ${thirdTrack.artist}`}
+              draggable={false}
+            />
+            
+            {/* 情報表示 */}
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 text-center">
+              <p className="text-white text-sm sm:text-base font-semibold truncate max-w-32 sm:max-w-40 md:max-w-48 mb-1">
+                {thirdTrack.name}
+              </p>
+              <p className="text-gray-300 text-xs sm:text-sm truncate max-w-32 sm:max-w-40 md:max-w-48 mb-1">
+                {thirdTrack.artist}
+              </p>
+              <div className="inline-flex items-center bg-spotify-green/15 px-2 sm:px-3 py-1 rounded-full">
+                <span className="text-spotify-green text-xs sm:text-sm font-bold">
+                  {mode === 'recent' ? `♪ ${thirdTrack.playCount}回` : `♥ ${thirdTrack.playCount}曲`}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4位以降の曲/アルバムを無作為に配置 - レスポンシブ対応 */}
+      {tracks.slice(3).map((track: Track, index: number) => {
         const position = positions[index]
         if (!position) return null
 
