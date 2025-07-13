@@ -12,7 +12,11 @@ export const api = {
   // Spotify認証URLを取得
   getSpotifyAuthUrl: async () => {
     const scope = 'user-read-recently-played user-library-read';
+    console.log('Frontend REDIRECT_URI:', REDIRECT_URI);
+    console.log('Frontend REDIRECT_URI length:', REDIRECT_URI.length);
+    console.log('Frontend REDIRECT_URI char codes:', Array.from(REDIRECT_URI).map(c => c.charCodeAt(0)));
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}`;
+    console.log('Generated auth URL:', authUrl);
     return { authUrl };
   },
 
