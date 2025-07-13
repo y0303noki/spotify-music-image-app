@@ -59,8 +59,8 @@ const MusicVisualizer: React.FC<MusicVisualizerProps> = ({ tracks, mode }) => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-spotify-black">
-      {/* 上位3曲のカードエリア */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-6xl px-4">
+      {/* 上位3曲のカードエリア（画面中央に配置） */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 w-full max-w-6xl px-4">
         <div className="flex justify-center items-center space-x-2 sm:space-x-4 md:space-x-6">
           {/* 3位のカード */}
           {thirdTrack && (
