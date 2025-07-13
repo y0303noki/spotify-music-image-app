@@ -225,7 +225,7 @@ const Dashboard: React.FC = () => {
               UI要素を非表示にしてクリーンな画像を撮影できます。
             </p>
             <p className="text-spotify-green text-sm font-semibold mb-4">
-              📸 撮影後は画面右上の透明ボタンをホバーして「戻る」をクリックしてください
+              📸 撮影後は画面右上のボタンをタップして「戻る」をクリックしてください
             </p>
             <div className="text-gray-400 text-xs">
               3秒後に自動でスクリーンショットモードに移行します...
@@ -234,12 +234,12 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* スクリーンショットモード時の小さな透明ボタン */}
+      {/* スクリーンショットモード時のスマホ対応透明ボタン */}
       {screenshotMode && (
-        <div className="absolute top-2 right-2 z-50 opacity-0 hover:opacity-100 transition-opacity duration-300 group">
+        <div className="absolute top-2 right-2 z-50 sm:opacity-0 sm:hover:opacity-100 transition-opacity duration-300 group">
           <button
             onClick={() => setScreenshotMode(false)}
-            className="bg-red-600/80 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold shadow-lg backdrop-blur-sm border border-red-400/50"
+            className="bg-red-600/80 hover:bg-red-600 text-white px-4 py-3 sm:px-3 sm:py-2 rounded-lg text-base sm:text-sm font-semibold shadow-lg backdrop-blur-sm border border-red-400/50 min-w-[60px] sm:min-w-0"
             title="スクリーンショットモードを終了"
           >
             戻る
